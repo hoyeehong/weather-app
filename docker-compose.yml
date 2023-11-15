@@ -1,0 +1,41 @@
+version: "3.4"
+
+services:
+  backend-api:
+    image: backend-api
+    build:
+      context: backend
+      dockerfile: ./Dockerfile
+    environment:
+      MONGO_URI: mongodb://mongodb:27017/weatherDB
+    ports:
+      - 3001:3001
+    networks:
+      - local-network
+
+  frontend-app:
+    image: frontend-app
+    build:
+      context: frontend
+      dockerfile: ./Dockerfile
+    environment:
+      REACT_APP_SAVE_DATA: http://localhost:3001/save-data
+      REACT_APP_BACKEND_SERVICES: http://localhost:3001/
+    ports:
+      - 3000:3000
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - local-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  local-network:
